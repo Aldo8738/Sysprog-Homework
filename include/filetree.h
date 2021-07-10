@@ -8,7 +8,7 @@
 #include <os_malloc.h>
 
 /* memory allocation macros, uncomment the following line to use your own os_malloc()/os_free() */
-//#define USE_MY_MALLOC
+#define USE_MY_MALLOC
 #ifdef USE_MY_MALLOC
 	#define ALLOCATE(SIZE) os_malloc(SIZE)
 	#define FREE(PTR) os_free(PTR)

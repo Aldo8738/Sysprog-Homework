@@ -168,52 +168,52 @@ void filetree_ls(const Directory * dir)
 
 }
 
-/* Prints recursively the Files and Directories from given Directory and name*/
-void printRecursively(const Directory* dir, const char * name, int emptyName){
-
-	Node* it = dir->first_child;
-	if (strcmp(dir->node.name, "") != 0){
-		printf("/%s", dir->node.name);
-	}
-		
-	while (it != NULL) {
-		if (emptyName == 1 || strcmp(name, it->name) == 0) {
-			printf("/%s\n", it->name);
-		}
-		
-		if (it->flags == FILE_TREE_FLAG_DIRECTORY) {
-			if (it->parent->node.name != NULL && strcmp(it->parent->node.name, "") != 0 && emptyName == 1) {
-				printf("/%s", it->parent->node.name);
-			}
-
-			//printf("/%s", it->name);
-			const Directory* temp = (const Directory*) it;
-			printRecursively(temp, name, emptyName);
-			
-		}
-		it = it->next;
-	}	
-}
-
-/* find */
+// /* find */
 void filetree_find(const Directory * start, const char * name)
 {
-	if (start == NULL || start->first_child == NULL) return;
+	int printAll = 0;
+	Node* startNode = (Node*) start;
 
-	
-	if (name == NULL){
-		printf("/%s\n", start->node.name);
-		printRecursively(start, name, 1);
+	// Check if it is the root to print
+	if (name == NULL || strcmp(name, "") == 0) {
+		printAll = 1;
+	}
+
+	if (startNode->parent == NULL && printAll == 1) {
+			printf("/\n");
 	} else {
-		printRecursively(start, name, 0);
+		if (printAll == 1 || strcmp(startNode->name, name) == 0) {
+			char* path = filetree_get_path(startNode);
+			printf("%s\n", path);
+			FREE(path);
+		}
 	}
 	
+	Node* it = start->first_child;
+	while (it != NULL) {
+		// Recursive call in case of Directory
+		if (it->flags == FILE_TREE_FLAG_DIRECTORY) {
+			filetree_find((const Directory*)it, name);
+
+		} else // File (no recursion)
+		{
+			if (printAll == 1 || strcmp(it->name, name) == 0) {
+				char* path = filetree_get_path(it);
+				printf("%s\n", path);
+				FREE(path);
+			}
+		}
+		it = it->next;
+	}
+
 }
 
 /* remove file/directory */
 FileError filetree_rm(Node * node)
 {
-	if (node->parent == NULL) return FILE_TREE_ERROR_RM_ROOT;
+	if (node->parent == NULL) 
+		return FILE_TREE_ERROR_RM_ROOT;
+
 	Node* temp = node->next;
 	Node* prev = node->prev;
 	if (node == node->parent->first_child) {
@@ -227,14 +227,17 @@ FileError filetree_rm(Node * node)
 		node->parent->first_child = temp;
 		FREE(node->name);
 		FREE(node);
+		return FILE_TREE_SUCCESS;
 	}
 	
-		
-	if (node->flags == FILE_TREE_FLAG_DIRECTORY){
-		destroyDirectory((Directory*)node);
-	} else {
-		destroyFileData((File*)node);
+	if (node != NULL) {
+		if (node->flags == FILE_TREE_FLAG_DIRECTORY){
+			destroyDirectory((Directory*)node);
+		} else {
+			destroyFileData((File*)node);
+		}
 	}
+	
 	prev->next = temp;
 	
 
@@ -331,7 +334,7 @@ FileError filetree_resolve_path(Tree * tree, const char * path, const Directory 
 	}
 
 	// Finding the ultimate-target
-	char* temp_2 = ALLOCATE(sizeof(char) * strlen(path) + 1);
+	char* temp_2 = ALLOCATE(sizeof(char) * (strlen(path) + 1));
 	strcpy(temp_2, path);
 	char* ultimateTarget;
 	char* next = strtok(temp_2, "/");
@@ -340,26 +343,35 @@ FileError filetree_resolve_path(Tree * tree, const char * path, const Directory 
 		ultimateTarget = next;
 		next = strtok(NULL, "/");
 	}
-	FREE(temp_2);
+	
 	// Finding the target
-	char* temp = ALLOCATE(sizeof(char) * strlen(path) + 1);
+	char* temp = ALLOCATE(sizeof(char) * (strlen(path) + 1));
 	strcpy(temp, path);
 	char* target = strtok(temp, "/");
 	int foundTarget = 0;
 
 	while (target != NULL) {
 		Node* it = current_dir->first_child;
+
 		if (strcmp(target, "..") == 0) {
-			it = current_dir->node.parent->first_child;
+			it = (Node*)current_dir->node.parent->first_child;
 			target = strtok(NULL, "/");
+			if (strcmp(target, ".") == 0) {
+			target = strtok(NULL, "/");
+			
+			}
 		}
+		
 		while (it != NULL) {
 			if (strcmp(it->name, target) == 0) {
+				if (it->name != NULL && ultimateTarget != NULL) {
+					if (strcmp(it->name, ultimateTarget) == 0){
+					foundTarget = 1;
+				}
+				}
+				
 				if (it->flags == FILE_TREE_FLAG_DIRECTORY) {
 					current_dir = (Directory*)it;
-				}
-				if (strcmp(it->name, ultimateTarget) == 0){
-					foundTarget = 1;
 				}
 				*resulting_node = it;
 			}
@@ -369,13 +381,13 @@ FileError filetree_resolve_path(Tree * tree, const char * path, const Directory 
 		target = strtok(NULL, "/");
 	}
 	FREE(temp);
+	FREE(temp_2);
+
 	if (foundTarget == 0) {
 		return FILE_TREE_ERROR_NOT_FOUND;
 	}
 	return FILE_TREE_SUCCESS;
 }
-
-
 
 /* get path */
 char* filetree_get_path(Node * n)
@@ -383,19 +395,23 @@ char* filetree_get_path(Node * n)
 	//calculate size of memory
 	int pathLength = 0;
 	Node* it = n;
+	int i = 0;
 	while(it != NULL) {
 		pathLength += strlen(it->name) + 1;
 		it = (Node*)it->parent;
+		//i++;
 	}
 
 	char* result = ALLOCATE(sizeof(char) * pathLength + 1);
 	char* result_2 = ALLOCATE(sizeof(char) * pathLength + 1);
 	it = n;
 	result[0] = '\0';
+	
 	while(it != NULL) {
 		strcat(result, "/");
 		strcat(result, it->name);
 		it = (Node*)it->parent;
+		
 	}
 	strcpy(result_2, result);
 	
@@ -403,7 +419,7 @@ char* filetree_get_path(Node * n)
 
 	//Count elements of path
 	char* temp = strtok(result, "/");
-	int i = 0;
+	// int i = 0;
 	while (temp != NULL) {
 		i++;
 		temp = strtok(NULL, "/");
@@ -416,13 +432,17 @@ char* filetree_get_path(Node * n)
 		temp =  strtok(NULL, "/");
 		arr[++j] = temp;
 	}
-	char* final_result = ALLOCATE(sizeof(char) * pathLength + 1);
-	final_result[0] = '\0';
+	char* result_3 = ALLOCATE(sizeof(char) * pathLength + 1);
+	result_3[0] = '\0';
 	for (int j = i - 1; j >= 0; j--) {
-		strcat(final_result, "/");
-		strcat(final_result, arr[j]);
+		strcat(result_3, "/");
+		strcat(result_3, arr[j]);
 	}
-	
+	char* final_result = ALLOCATE(sizeof(char) * pathLength + 1);
+	strcpy(final_result, result_3);
+	FREE(result);
+	FREE(result_2);
+	FREE(result_3);
 	return final_result;
 }
 
