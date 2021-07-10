@@ -1,0 +1,4 @@
+-Wall
+-std=c11
+-g
+-Iinclude

@@ -1,0 +1,4 @@
+this_is_a_directory_with_a_super_long_name     DIRECTORY
+a                                              DIRECTORY
+this_is_a_file                                 FILE
+this_is_a_directory                            DIRECTORY

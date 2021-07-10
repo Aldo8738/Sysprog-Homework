@@ -1,0 +1,28 @@
+Übersicht über alle Makefile targets
+
+(default)
+make all:
+Compiliert das Programm
+
+make run:
+Wie "make all" aber führt das Programm auch direkt aus
+
+make test_*:
+Baut den Test und führt in aus. Es werden alle .c Dateien die in dem Ordner tests
+liegen und mit "test_" beginnen erfasst. Der Aufruf muss ohne Dateiendung erfolgen.
+Beispiel: "make test_malloc_alloc".
+
+make tests_all:
+Führt alle Tests aus.
+
+make tests_filetree_all:
+Führt alle Tests aus die mit "test_filetree_" beginnen.
+
+make tests_malloc_all:
+Führt alle Tests aus die mit "test_malloc_" beginnen.
+
+make clean:
+Räumt auf und löscht alle zwischen compilierten Dateien und Test outputs.
+
+make submission:
+Verpackt alle relevanten Dateien für die Abgabe in ein zip Archiv.

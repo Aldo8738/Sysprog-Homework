@@ -1,0 +1,52 @@
+TEST PASSED: No difference between EXPECTED and FOUND.
+######################## EXPECTED ########################
+-> resolve root with '/' from root:
+root
+
+-> resolve root with '' from root:
+root
+
+-> resolve directory 'a' with '/a/' from root:
+a
+
+-> resolve directory 'a' with '.' from 'a':
+a
+
+-> resolve file 'b' with '/a//b' from root:
+b
+
+-> resolve file 'c' with './../c' from 'a':
+c
+
+-> generate 'not found' error with '/a/b/c' from root:
+no such file or directory
+
+-> generate 'not found' error with '..' from root:
+no such file or directory
+
+########################## FOUND #########################
+-> resolve root with '/' from root:
+root
+
+-> resolve root with '' from root:
+root
+
+-> resolve directory 'a' with '/a/' from root:
+a
+
+-> resolve directory 'a' with '.' from 'a':
+a
+
+-> resolve file 'b' with '/a//b' from root:
+b
+
+-> resolve file 'c' with './../c' from 'a':
+c
+
+-> generate 'not found' error with '/a/b/c' from root:
+no such file or directory
+
+-> generate 'not found' error with '..' from root:
+no such file or directory
+
+##########################################################

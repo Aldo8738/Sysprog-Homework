@@ -1,0 +1,28 @@
+TEST PASSED: No difference between EXPECTED and FOUND.
+######################## EXPECTED ########################
+-> get path of root:
+
+
+-> get path of 'my_dir':
+/my_dir
+
+-> get path of 'this-is-a-file.txt':
+/this-is-a-file.txt
+
+-> get path of 'file01' in directory 'my_dir':
+/my_dir/file01
+
+########################## FOUND #########################
+-> get path of root:
+
+
+-> get path of 'my_dir':
+/my_dir
+
+-> get path of 'this-is-a-file.txt':
+/this-is-a-file.txt
+
+-> get path of 'file01' in directory 'my_dir':
+/my_dir/file01
+
+##########################################################

@@ -1,0 +1,47 @@
+--- Beginning of memory layout ---
++--------------------------------+
+| Block at:       0x561c55d5f0b0 |
+|  -  -  -  -  -  -  -  -  -  -  |
+| Next at:        0x561c55d5f0d0 |
+| Availability:             used |
+| Size:                       32 |
+| Data (first 8 Bytes):          |
+|   ASCII : B.B._._._._._._      |
+|   HEX   : 0x42 0x42 0x00 0x00  |
+|           0x00 0x00 0x00 0x00  |
++--------------------------------+
+| Block at:       0x561c55d5f0d0 |
+|  -  -  -  -  -  -  -  -  -  -  |
+| Next at:        0x561c55d5f3e8 |
+| Availability:             free |
+| Size:                      792 |
++--------------------------------+
+| Block at:       0x561c55d5f3e8 |
+|  -  -  -  -  -  -  -  -  -  -  |
+| Next at:        0x561c55d5f410 |
+| Availability:             used |
+| Size:                       40 |
+| Data (first 8 Bytes):          |
+|   ASCII : A.A.A.A.A.A.A.A      |
+|   HEX   : 0x41 0x41 0x41 0x41  |
+|           0x41 0x41 0x41 0x41  |
++--------------------------------+
+| Block at:       0x561c55d5f410 |
+|  -  -  -  -  -  -  -  -  -  -  |
+| Next at:        0x561c55d5f430 |
+| Availability:             used |
+| Size:                       32 |
+| Data (first 8 Bytes):          |
+|   ASCII : C.C.C.C.C._._._      |
+|   HEX   : 0x43 0x43 0x43 0x43  |
+|           0x43 0x00 0x00 0x00  |
++--------------------------------+
+| Block at:       0x561c55d5f430 |
+|  -  -  -  -  -  -  -  -  -  -  |
+| Next at:                 (nil) |
+| Availability:             free |
+| Size:                      104 |
++--------------------------------+
+------ End of memory layout ------
+Expected: BBAAAAAAAAACCCCC
+Found   : BBAAAAAAAAACCCCC
