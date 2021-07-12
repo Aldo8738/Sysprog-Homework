@@ -111,7 +111,7 @@ FileError filetree_mkfile(Directory * parent, const char * name, const void * da
 		return FILE_TREE_ERROR_DUPLICATE_NAME;
 	}
 	File* newFile = ALLOCATE(sizeof(File));
-	newFile->data = ALLOCATE(data_len * sizeof(size_t));
+	newFile->data = ALLOCATE(data_len * sizeof(size_t) + 1);
 	memcpy(newFile->data, data, data_len);
 	newFile->data_len = data_len;
 	setNode(&newFile->node, 0,  parent->first_child, NULL, name, parent);
@@ -332,6 +332,13 @@ FileError filetree_resolve_path(Tree * tree, const char * path, const Directory 
 		current_dir = (Directory*)it;
 		return FILE_TREE_SUCCESS;
 	}
+	//parent directory
+	if (strcmp(path, "..") == 0 && current_dir->node.parent != NULL) {
+		Node* it = (Node*)current_dir->node.parent;
+		*resulting_node = it;
+		current_dir = (Directory*)it;
+		return FILE_TREE_SUCCESS;
+	}
 
 	// Finding the ultimate-target
 	char* temp_2 = ALLOCATE(sizeof(char) * (strlen(path) + 1));
@@ -356,14 +363,16 @@ FileError filetree_resolve_path(Tree * tree, const char * path, const Directory 
 		if (strcmp(target, "..") == 0) {
 			it = (Node*)current_dir->node.parent->first_child;
 			target = strtok(NULL, "/");
-			if (strcmp(target, ".") == 0) {
-			target = strtok(NULL, "/");
-			
+			if (target != NULL) {
+				if(strcmp(target, ".") == 0) {
+					target = strtok(NULL, "/");
+				}
 			}
 		}
 		
 		while (it != NULL) {
-			if (strcmp(it->name, target) == 0) {
+			if (it->name != NULL && target != NULL){
+				if (strcmp(it->name, target) == 0) {
 				if (it->name != NULL && ultimateTarget != NULL) {
 					if (strcmp(it->name, ultimateTarget) == 0){
 					foundTarget = 1;
@@ -375,6 +384,7 @@ FileError filetree_resolve_path(Tree * tree, const char * path, const Directory 
 				}
 				*resulting_node = it;
 			}
+			} 
 			it = it->next;
 		}
 		
@@ -413,7 +423,10 @@ char* filetree_get_path(Node * n)
 		it = (Node*)it->parent;
 		
 	}
-	strcpy(result_2, result);
+	if (result != NULL) {
+		strcpy(result_2, result);
+	}
+	
 	
 
 

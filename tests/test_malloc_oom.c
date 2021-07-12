@@ -9,7 +9,7 @@ static char mem[MEM_SIZE] __attribute__((aligned(8)));
 
 int main() {
 
-	os_init(mem, 150, FIRST_FIT);
+	os_init(mem, 150, WORST_FIT);
 
 	void * ptr_1 = os_malloc(100); // this should work
 	void * ptr_2 = os_malloc(100); // this shouldn't

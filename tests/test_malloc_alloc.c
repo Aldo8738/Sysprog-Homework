@@ -8,7 +8,7 @@ static char mem[MEM_SIZE] __attribute__((aligned(8)));
 
 int main() {
 
-	os_init(mem, MEM_SIZE, FIRST_FIT);
+	os_init(mem, MEM_SIZE, WORST_FIT);
 
 	char * ptr = os_malloc(10);
 	char * expected = (((char *) mem) + sizeof(mem_block));
